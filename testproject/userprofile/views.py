@@ -18,7 +18,7 @@ def signup_view(request):
         signup_form=SignUpForm(request.POST)
         if signup_form.is_valid():
             username=signup_form.cleaned_data["username"]
-            name = signup_form.cleaned_data["name"]
+            name = signup_form.cleaned_data["fullname"]
             email = signup_form.cleaned_data["email"]
             password = signup_form.cleaned_data["password"]
             user=usermodel(name=name,password=make_password(password),email=email,username=username)
