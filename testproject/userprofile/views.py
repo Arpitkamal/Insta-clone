@@ -15,21 +15,20 @@ def signup_view(request):
     import datetime
 
     if request.method =="POST":
-        form=SignUpForm(request.POST)
-        if form.is_valid():
-            username=form.cleaned_data["username"]
-            name = form.cleaned_data["name"]
-            email = form.cleaned_data["email"]
-            password = form.cleaned_data["password"]
-            user=usermodel(fullname=name,password=make_password(password),Email=email,username=username)
+        signup_form=SignUpForm(request.POST)
+        if signup_form.is_valid():
+            username=signup_form.cleaned_data["username"]
+            name = signup_form.cleaned_data["name"]
+            email = signup_form.cleaned_data["email"]
+            password = signup_form.cleaned_data["password"]
+            user=usermodel(name=name,password=make_password(password),email=email,username=username)
             user.save()
             return render(request,'success.html')
 
 
-    else:
-        signup_form = SignUpForm()
-        template=loader.get_template('userprofile/index.html')
-        return render(request , 'userprofile/index.html',{'form': signup_form})
+    elif request.method=="GET":
+        form=SignUpForm()
+    return render(request , 'index.html',{'form': form})
 
 
 
@@ -52,7 +51,6 @@ def login_view(request):
                 print "user is Invalid"
             render(request,'success.html')
     elif request.method== "GET":
-        template=loader.get_template('userprofile/index.html')
         login_form=LoginForm()
         date=datetime.datetime.now()
     return render(request , 'userprofile/index.html',{'hun_da_time':date})
