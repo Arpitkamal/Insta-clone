@@ -11,7 +11,7 @@ this class is for user profile
 """
 class usermodel(models.Model):
     email=models.EmailField(unique=True,null=False,blank=False)
-    fullname=models.CharField(max_length=100)
+    name=models.CharField(max_length=100)
     username=models.CharField(max_length=200,unique=True,null=False,blank=False)
     password=models.CharField(max_length=250)
     created_on = models.DateTimeField(auto_now_add=True)

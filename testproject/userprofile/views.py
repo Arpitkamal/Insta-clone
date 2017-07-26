@@ -18,7 +18,7 @@ def signup_view(request):
         signup_form=SignUpForm(request.POST)
         if signup_form.is_valid():
             username=signup_form.cleaned_data["username"]
-            name = signup_form.cleaned_data["fullname"]
+            name = signup_form.cleaned_data["name"]
             email = signup_form.cleaned_data["email"]
             password = signup_form.cleaned_data["password"]
             user=usermodel(name=name,password=make_password(password),email=email,username=username)
@@ -54,4 +54,9 @@ def login_view(request):
         login_form=LoginForm()
         date=datetime.datetime.now()
     return render(request , 'userprofile/index.html',{'hun_da_time':date})
+
+
+
+def feed_view(request):
+    return render(request, 'feed.html')
 

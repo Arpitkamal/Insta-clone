@@ -18,7 +18,9 @@ from django.contrib import admin
 from userprofile.views import signup_view,login_view
 
 urlpatterns = [
-    url('',signup_view),
+
     url('login',login_view),
+    url('',signup_view),
+
 
 ]
