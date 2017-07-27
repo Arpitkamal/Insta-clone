@@ -12,23 +12,20 @@ from django.contrib.auth.hashers import make_password ,check_password
 
 # Create your views here.
 def signup_view(request):
-    import datetime
 
-    if request.method =="POST":
-        signup_form=SignUpForm(request.POST)
-        if signup_form.is_valid():
-            username=signup_form.cleaned_data["username"]
-            name = signup_form.cleaned_data["name"]
-            email = signup_form.cleaned_data["email"]
-            password = signup_form.cleaned_data["password"]
-            user=usermodel(name=name,password=make_password(password),email=email,username=username)
+    if request.method=="POST":
+        form=SignUpForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data['name']
+            email = form.cleaned_data['email']
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user=usermodel(name=name,username=username,email=email,password=make_password(password))
             user.save()
             return render(request,'success.html')
-
-
     elif request.method=="GET":
-        form=SignUpForm()
-    return render(request , 'index.html',{'form': form})
+        signup_form=SignUpForm()
+    return render(request , 'index.html',{'form': signup_form})
 
 
 
