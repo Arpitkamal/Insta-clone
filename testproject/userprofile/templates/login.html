@@ -2,10 +2,37 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Login</title>
+    <h1>Login</h1>
+    <h4>{{hun_da_time}}</h4>
+    <style>
+    body{
+    text-align:center;
+    background:url("http://2.bp.blogspot.com/-xmjmQzG1SE8/VC2L9UZNYbI/AAAAAAAAikU/QGO0KFnjANk/s1600/Abstract%2BTriangles%2BWallpapers%2B2.jpg");
+    padding:100px;
+    color:black;
+    margin:0 auto;
+    background-size:cover;
+    }
+    input{
+    padding:10px;
+    }
+    div{
+    padding:10px;
+    }
+    </style>
 </head>
 <body>
-     <>
+    <form method="post">
+     <div>
+         <input id="username" text="text" name="username" placeholder="username" value={{ username }}>
+     </div>
 
+       <div>
+           <input id="password" text="password" name="password"  placeholder="password" value={{ password }}>
+       </div>
+    </form>
+
+   <input type="submit" value="login">
 </body>
 </html>

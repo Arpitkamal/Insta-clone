@@ -28,3 +28,18 @@ class UserSessionToken(models.Model):
         from uuid import uuid4
 
         self.session_token=uuid4()
+
+
+class Postmodal(models.Model):
+    user=models.ForeignKey(usermodel)
+    image=models.FileField(upload_to='user_images')
+    image_url=models.CharField(max_length=255)
+    caption=models.CharField(max_length=255)
+    created_on=models.DateTimeField(auto_now_add=True)
+    modified_on=models.DateTimeField(auto_now=True)
+
+
+
+
+
+

@@ -6,34 +6,53 @@
 <head>
     <meta charset="UTF-8">
     <title>Instagram clone</title>
+
 </head>
 <body>
             <div class="main">
             <h1> Instagram Clone</h1>
             <h3>Sign Up</h3>
+                <h4>{{hun_da_time}}</h4>
+                <style>
+                 body{
+                 text-align:center;
+                 background:url("http://2.bp.blogspot.com/-xmjmQzG1SE8/VC2L9UZNYbI/AAAAAAAAikU/QGO0KFnjANk/s1600/Abstract%2BTriangles%2BWallpapers%2B2.jpg");
+                 padding:50px;
+                 margin: 0 auto;
+                 background-size:cover;
+                 }
+                 input{
+                 padding:10px;
+                 }
+                 div{
+                 padding:5px;
+                 }
+
+                </style>
     </div>
+
     <div>
         <form method="post">
           {% csrf_token %}
 
             <div>
                 <label for="username">Username: </label>
-                <input id="username" type="text" name="username" value={{ username }}>
+                <input id="username" type="text" name="username" placeholder="Username" value={{ username }}>
             </div>
 
             <div>
                 <label for="name">Name: </label>
-                <input id="name" type="text" name="name" value={{ name }}>
+                <input id="name" type="text" name="name" placeholder="Name" value={{ name }}>
             </div>
 
             <div>
                 <label for="email">Email: </label>
-                <input id="email" type="text" name="email" value={{ email }}>
+                <input id="email" type="text" name="email" placeholder="test@test.com" value={{ email }}>
             </div>
 
             <div>
                 <label for="password">Password: </label>
-                <input id="password" type="password" name="password" value={{ password }}>
+                <input id="password" type="password" name="password" placeholder="Password" value={{ password }}>
             </div>
                 <input type="submit" value="Sign Up">
         </form>
