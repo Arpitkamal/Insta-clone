@@ -19,3 +19,10 @@ class PostForm(forms.ModelForm):
     class Meta:
         model=Postmodal
         fields=['image','caption']
+
+
+class LikeForm(forms.ModelForm):
+
+     class Meta:
+         model=Postmodal
+         fields=['post']

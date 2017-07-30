@@ -3,9 +3,9 @@ from __future__ import unicode_literals
 
 from django.shortcuts import render
 from django.shortcuts import render,redirect
-from forms import SignUpForm,LoginForm,PostForm
+from forms import SignUpForm,LoginForm,PostForm,LikeForm
 from django.template import loader
-from models import usermodel,UserSessionToken,Postmodal
+from models import usermodel,UserSessionToken,Postmodal,Likemodel
 from django.http import HttpResponse
 from django.contrib.auth.hashers import make_password ,check_password
 from imgurpython import ImgurClient
@@ -66,7 +66,7 @@ def feed_view(request):
 
 def check_validation(request):
     if request.COOKIES.get('session_token'):
-        session=UserSessionToken.object.filter(session_token=request.COOKIES.get('session_token')).first()
+        session=UserSessionToken.objects.filter(session_token=request.COOKIES.get('session_token')).first()
         if session:
             return session.user
         else:
@@ -75,9 +75,7 @@ def check_validation(request):
 
 def post_view(request):
     user=check_validation(request)
-
     if user:
-
         if request.method=="POST":
             form=PostForm(request.post,request.FILES)
             if form.is_valid:
@@ -104,3 +102,24 @@ def feed_view(request):
         return render(request,"feed.html",{"posts":posts})
     else:
         return render('/login/')
+
+
+def like_view(request):
+    user=check_validation(request)
+    if user and request.method=="POST":
+        form=LikeForm(request.POST)
+        if form.is_valid():
+            post_id=form.cleaned_data.get("post").id
+            existing_like=Likemodel.objects.filter(post_id=post_id,user=user).first()
+            if not existing_like:
+                Likemodel.objects.filter(post_id=post_id,user=user)
+            else:
+             existing_like.delete()
+
+             return redirect("/feed/")
+
+    else:
+        return redirect("/login/")
+    @property
+    def like_count(self):
+        return len(Likemodel.objects.filter(post=self))

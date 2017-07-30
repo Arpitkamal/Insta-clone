@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
@@ -20,13 +20,15 @@
     div{
     padding:10px;
     }
+
     </style>
 </head>
 <body>
     <form method="post">
         {%csrf_token%}
      <div>
-         <input  type="text" name="username" placeholder="username" value={{ username }}>
+     </div>
+         <input id="username" type="text" name="username" placeholder="username" value={{ username }}>
      </div>
 
        <div>

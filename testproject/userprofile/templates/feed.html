@@ -5,10 +5,23 @@
     <title>Feed</title>
 </head>
 <body>
-   {% for x in posts % }
-    <h3> Posted by: {{x.user.username}}</h3>
-     <img src="{{x.image_url}}">
-     <spam>{{x.caption}}</spam>
+ <from method="post" action="/post/">
+     {% csrf_token %}
+     <input type="submit" class="btn-default btn" value="Create post">
+ </from>
+   {% for x in posts %}
+
+      <h3> Posted by: {{x.user.username}}</h3>
+      <img src="{{x.image_url}}">
+      <span>{{ x.caption }}</span>
+       <form method="post" action="/like/">
+           {% csrf_token %}
+           <input type="hidden" name="post" value="{{ post.id }}">
+           <input type="submit" class="btn btn-default" value="like">
+       </form>
+       <div style="display:inline-block">
+           {{x.like_count}} like this
+       </div>
    {% endfor %}
 </body>
 </html>
