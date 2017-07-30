@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Login</title>
     <h1>Login</h1>
-    <h4>{{hun_da_time}}</h4>
+    <h4>{{datei}}</h4>
     <style>
     body{
     text-align:center;
@@ -24,15 +24,16 @@
 </head>
 <body>
     <form method="post">
+        {%csrf_token%}
      <div>
-         <input id="username" text="text" name="username" placeholder="username" value={{ username }}>
+         <input  type="text" name="username" placeholder="username" value={{ username }}>
      </div>
 
        <div>
-           <input id="password" text="password" name="password"  placeholder="password" value={{ password }}>
+           <input  type="password" name="password"  placeholder="password" value={{ password }}>
        </div>
+        <input type="submit" value="Login">
     </form>
 
-   <input type="submit" value="login">
 </body>
 </html>

@@ -24,7 +24,7 @@ class UserSessionToken(models.Model):
     created_on=models.DateTimeField(auto_now_add=True)
     is_valid=models.BooleanField(default=True)
 
-    def create_token(self):
+    def Create_token(self):
         from uuid import uuid4
 
         self.session_token=uuid4()

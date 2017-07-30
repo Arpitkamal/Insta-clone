@@ -2,9 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Feed</title>
 </head>
 <body>
-
+   {% for x in posts % }
+    <h3> Posted by: {{x.user.username}}</h3>
+     <img src="{{x.image_url}}">
+     <spam>{{x.caption}}</spam>
+   {% endfor %}
 </body>
 </html>
