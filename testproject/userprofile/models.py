@@ -37,6 +37,15 @@ class Postmodal(models.Model):
     caption=models.CharField(max_length=255)
     created_on=models.DateTimeField(auto_now_add=True)
     modified_on=models.DateTimeField(auto_now=True)
+    has_like=False
+
+    @property
+    def like_count(self):
+        return len(Likemodel.objects.filter(post=self))
+
+    @property
+    def comments(self):
+        return Commentmodel.objects.filter(post=self).order_by('created_on')
 
 
 class Likemodel(models.Model):
@@ -46,8 +55,12 @@ class Likemodel(models.Model):
     modified=models.DateTimeField(auto_now=True)
 
 
-
-
+class Commentmodel(models.Model):
+    user=models.ForeignKey(usermodel)
+    post=models.ForeignKey(Postmodal)
+    comment_text=models.CharField(max_length=1000)
+    created_on=models.DateTimeField(auto_now_add=True)
+    modified=models.DateTimeField(auto_now=True)
 
 
 

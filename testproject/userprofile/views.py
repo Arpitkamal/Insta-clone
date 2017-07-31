@@ -3,9 +3,9 @@ from __future__ import unicode_literals
 
 from django.shortcuts import render
 from django.shortcuts import render,redirect
-from forms import SignUpForm,LoginForm,PostForm,LikeForm
+from forms import SignUpForm,LoginForm,PostForm,LikeForm,CommentForm
 from django.template import loader
-from models import usermodel,UserSessionToken,Postmodal,Likemodel
+from models import usermodel,UserSessionToken,Postmodal,Likemodel,Commentmodel
 from django.http import HttpResponse
 from django.contrib.auth.hashers import make_password ,check_password
 from imgurpython import ImgurClient
@@ -62,7 +62,16 @@ def login_view(request):
 
 
 def feed_view(request):
-    return render(request, 'feed.html')
+    user=check_validation(request)
+    if user:
+        posts=Postmodal.objects.all().order_by('created_on')
+
+        for post in posts:
+            existing_like=Likemodel.objects.filter(post_id=post.id,user=user).first()
+            if existing_like:
+                post.has_like=True
+
+        return render(request, 'feed.html',{'posts': posts})
 
 def check_validation(request):
     if request.COOKIES.get('session_token'):
@@ -99,6 +108,12 @@ def feed_view(request):
     user=check_validation(request)
     if user:
         posts=Postmodal.objects.all().order_by('created_on')
+
+        for post in posts:
+            existing_like=Likemodel.objects.filter(post_id=post_id,user=user).first()
+            if existing_like:
+                post.has_like=True
+
         return render(request,"feed.html",{"posts":posts})
     else:
         return render('/login/')
@@ -120,6 +135,21 @@ def like_view(request):
 
     else:
         return redirect("/login/")
-    @property
-    def like_count(self):
-        return len(Likemodel.objects.filter(post=self))
+
+
+
+
+def comment_view(request):
+    user=check_validation(request)
+    if user and request.method=="POST":
+        form=CommentForm(request.POST)
+        if form.is_valid():
+            post_id=form.cleaned_data.get("post").id
+            comment_text=form.cleaned_data.get("comment_text")
+            comment=Commentmodel.objects.create(user=user,post_id=post_id,comment_text=comment_text)
+            comment.save()
+            return redirect("feed/")
+        else:
+            return redirect("feed/")
+    else:
+        return redirect('login/')
