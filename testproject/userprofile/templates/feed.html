@@ -5,10 +5,15 @@
     <title>Feed</title>
 </head>
 <body>
- <from method="post" action="/post/">
+
+
+ <from method="POST" action="post/">
      {% csrf_token %}
      <input type="submit" class="btn-default btn" value="Create post">
  </from>
+
+
+
    {% for post in posts %}
 
       <h3> Posted by: {{post.user.username}}</h3>
@@ -20,7 +25,7 @@
            <input type="submit" class="btn btn-default" value="like">
        </form>
        <div style="display:inline-block">
-           {{x.like_count}} like this
+           {{post.like_count}} like this
        </div>
        {% if post.has_like %}
             <input type="submit" class="btn btn-default" value="Unlike">
