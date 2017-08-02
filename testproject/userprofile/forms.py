@@ -30,5 +30,5 @@ class LikeForm(forms.ModelForm):
 class CommentForm(forms.ModelForm):
 
     class Meta:
-        modul=Commentmodel
+        model=Commentmodel
         fields=['comment_text','post']

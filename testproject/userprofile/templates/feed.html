@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Feed</title>
 </head>
-<body>
+<br>
 
 
  <form  method="post" action="/post/" >
@@ -17,21 +17,22 @@
    {% for post in posts %}
 
       <h3> Posted by: {{post.user.username}}</h3>
-      <img src="{{post.image_url}}">
-      <span>{{ post.caption }}</span>
-       <form method="post" action="/like/">
-           {% csrf_token %}
-           <input type="hidden" name="post" value="{{ post.id }}">
-           <input type="submit" class="btn btn-default" value="like">
-       </form>
+      <img style="display:inline-block; width:350px; height:300px; " src="{{post.image_url}}"><br/><br/>
+      <span style="display:inline-block">{{ post.caption }}</span><br/><br/>
        <div style="display:inline-block">
            {{post.like_count}} like this
        </div>
-       {% if post.has_like %}
-            <input type="submit" class="btn btn-default" value="Unlike">
-       {% else %}
-            <input type="submit" class="btn btn-default" value="Like">
-       {% endif %}
+       <div style="display:inline-block">
+         <form method="post" action="/like/">
+            {% csrf_token %}
+           <input type="hidden" name="post" value="{{ post.id }}"/>
+           {% if post.has_like %}
+             <input type="submit" class="btn btn-default" value="Unlike">
+           {% else %}
+             <input type="submit" class="btn btn-default" value="Like">
+           {% endif %}
+         </form>
+       </div>
        <form method="post" action="/comment/">
            {% csrf_token %}
            <input type="hidden" name="post" value="{{ post.id }}">

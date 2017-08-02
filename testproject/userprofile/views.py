@@ -129,11 +129,11 @@ def like_view(request):
             post_id=form.cleaned_data.get("post").id
             existing_like=Likemodel.objects.filter(post_id=post_id,user=user).first()
             if not existing_like:
-                Likemodel.objects.filter(post_id=post_id,user=user)
+                Likemodel.objects.create(post_id=post_id,user=user)
             else:
-             existing_like.delete()
+                 existing_like.delete()
 
-             return redirect("/feed/")
+            return redirect("/feed/")
 
     else:
         return redirect("/login/")
