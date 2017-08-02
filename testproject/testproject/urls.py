@@ -15,14 +15,15 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from userprofile.views import signup_view,login_view,feed_view,post_view,like_view,comment_view
+from userprofile.views import signup_view,login_view,feed_view,Post_view,like_view,comment_view
+import re
 
 urlpatterns = [
-    url('post/',post_view),
-    url('feed/',feed_view),
-    url('like',like_view),
-    url('comment',comment_view),
+    url('comment/',comment_view),
+    url('like/',like_view),
+    url('post/', Post_view),
+    url('feed/', feed_view),
     url('login/',login_view),
-    url('',signup_view),
+    url('^',signup_view),
 
 ]

@@ -84,14 +84,14 @@ def check_validation(request):
             return None
 
 
-def post_view(request):
+def Post_view(request):
     user=check_validation(request)
     if user:
         if request.method=="POST":
             form=PostForm(request.POST,request.FILES)
-            if form.is_valid:
-                image=form.cleaned_data.get('image')
-                caption=form.cleaned_data.get('caption')
+            if form.is_valid():
+                image=form.cleaned_data['image']
+                caption=form.cleaned_data['caption']
                 user=Postmodal(user=user,image=image,caption=caption)
                 user.save()
                 path=os.path.join(BASE_DIR,user.image.url)
