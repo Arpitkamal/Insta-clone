@@ -64,4 +64,3 @@ class Commentmodel(models.Model):
 
 
 
-

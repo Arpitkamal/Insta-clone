@@ -10,8 +10,10 @@ from django.http import HttpResponse
 from django.contrib.auth.hashers import make_password ,check_password
 from imgurpython import ImgurClient
 from testproject.settings import BASE_DIR
-import datetime
+from datetime import timedelta
+from django.utils import timezone
 import os
+from clarifai.rest import ClarifaiApp
 USER_CLIENT_ID='eadc92c53ed9e6e'
 USER_CLIENT_SECRET='f392bcdca7698d2928f9157d230cefc62d62e554'
 
@@ -79,7 +81,9 @@ def check_validation(request):
     if request.COOKIES.get('session_token'):
         session=UserSessionToken.objects.filter(session_token=request.COOKIES.get('session_token')).first()
         if session:
-            return session.user
+            time_to_live=session.created_on+timedelta(days=1)
+            if time_to_live>timezone.now():
+               return session.user
         else:
             return None
 
@@ -90,18 +94,25 @@ def Post_view(request):
         if request.method=="POST":
             form=PostForm(request.POST,request.FILES)
             if form.is_valid():
-                image=form.cleaned_data['image']
-                caption=form.cleaned_data['caption']
+                image=form.cleaned_data.get('image')
+                caption=form.cleaned_data.get('caption')
                 user=Postmodal(user=user,image=image,caption=caption)
                 user.save()
                 path=os.path.join(BASE_DIR,user.image.url)
                 client=ImgurClient(USER_CLIENT_ID,USER_CLIENT_SECRET)
                 user.image_url=client.upload_from_path(path,anon=True)['link']
                 user.save()
+                app = ClarifaiApp(api_key="aa14b38a0332430789ff7aebdcdd466b")
+                model = app.models.get("nsfw-v1.3")
+                response=model.predict_by_url(url=user.image_url)
+                i=len(response["outputs"])
+                i-=1
+                if response["outputs"][i]["data"]["concepts"][1]>response["output"][i]["data"]["concepts"][0]:
+                    user.image_url.delete()
                 return redirect('/feed/')
         elif request.method=="GET":
-            post_form=PostForm()
-        return render(request,'post.html',{'form':post_form})
+            form=PostForm()
+        return render(request,'post.html',{'form':form})
     else:
         redirect('/login/')
 
@@ -140,7 +151,6 @@ def like_view(request):
 
 
 
-
 def comment_view(request):
     user=check_validation(request)
     if user and request.method=="POST":
@@ -155,3 +165,4 @@ def comment_view(request):
             return redirect("feed/")
     else:
         return redirect('login/')
+
