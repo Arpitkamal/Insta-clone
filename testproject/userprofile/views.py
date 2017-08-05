@@ -78,15 +78,6 @@ def feed_view(request):
     else:
         return render('/login/')
 
-def check_validation(request):
-    if request.COOKIES.get('session_token'):
-        session=UserSessionToken.objects.filter(session_token=request.COOKIES.get('session_token')).first()
-        if session:
-            time_to_live=session.created_on+timedelta(days=1)
-            if time_to_live>timezone.now():
-               return session.user
-        else:
-            return None
 
 
 def Post_view(request):
@@ -108,7 +99,7 @@ def Post_view(request):
                 i=len(response["outputs"])
                 i-=1
                 if response["outputs"][i]["data"]["concepts"][1]>response["outputs"][i]["data"]["concepts"][0]:
-                    ctypes.windll.user32.MessageBoxW(0, u"you are uploading adult content", u"Error", 0)
+                    ctypes.windll.user32.MessageBoxW(0, u"Warning!! you are uploading adult content", u"Error", 0)
                 else:
                     user.save()
                 return redirect('/feed/')
@@ -122,7 +113,7 @@ def Post_view(request):
 def feed_view(request):
     user=check_validation(request)
     if user:
-        posts=Postmodal.objects.all().order_by('created_on')
+        posts=Postmodal.objects.all().order_by('-created_on')
 
         for post in posts:
             existing_like=Likemodel.objects.filter(post_id=post.id,user=user).first()
@@ -143,8 +134,10 @@ def like_view(request):
             existing_like=Likemodel.objects.filter(post_id=post_id,user=user).first()
             if not existing_like:
                 Likemodel.objects.create(post_id=post_id,user=user)
+                ctypes.windll.user32.MessageBoxW(0, u"liked successfully", u"SUCCESS", 0)
             else:
                  existing_like.delete()
+                 ctypes.windll.user32.MessageBoxW(0, u"unlike successfully", u"SUCCESS", 0)
 
             return redirect("/feed/")
 
@@ -162,9 +155,29 @@ def comment_view(request):
             comment_text=form.cleaned_data.get("comment_text")
             comment=Commentmodel.objects.create(user=user,post_id=post_id,comment_text=comment_text)
             comment.save()
+            ctypes.windll.user32.MessageBoxW(0, u"comment posted successfully", u"SUCCESS", 0)
             return redirect("feed/")
         else:
             return redirect("feed/")
     else:
         return redirect('login/')
 
+def check_validation(request):
+    if request.COOKIES.get('session_token'):
+        session = UserSessionToken.objects.filter(session_token=request.COOKIES.get('session_token')).first()
+        if session:
+            time_to_live = session.created_on + timedelta(days=1)
+            if time_to_live > timezone.now():
+                return session.user
+            else:
+                return None
+
+
+def logout_view(request):
+    if request.COOKIES.get("session_token"):
+        session=UserSessionToken.objects.filter(session_token=request.COOKIES.get("session_token")).first()
+        if session:
+            session.delete()
+            return render(request,"logout.html")
+    else:
+        return None
