@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.shortcuts import render
 from django.shortcuts import render,redirect
 from forms import SignUpForm,LoginForm,PostForm,LikeForm,CommentForm
 from django.template import loader
@@ -17,9 +16,12 @@ from clarifai.rest import ClarifaiApp
 import ctypes
 import sendgrid
 from sendgrid.helpers.mail import *
+import requests,json
 USER_CLIENT_ID='eadc92c53ed9e6e'
 USER_CLIENT_SECRET='f392bcdca7698d2928f9157d230cefc62d62e554'
 SENDGRID_API_KEY="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"
+PARALLELDOTS_KEY="bH9BtD1MWO61McK0LgAlGpeglsBIivXEFDQMO9VA1qo"
+
 
 # Create your views here.
 def signup_view(request):
@@ -107,14 +109,21 @@ def Post_view(request):
                 path=os.path.join(BASE_DIR,user.image.url)
                 client=ImgurClient(USER_CLIENT_ID,USER_CLIENT_SECRET)
                 user.image_url=client.upload_from_path(path,anon=True)['link']
+                #using clarifai api
                 app = ClarifaiApp(api_key="aa14b38a0332430789ff7aebdcdd466b")
                 model = app.models.get("nsfw-v1.0")
                 response=model.predict_by_url(url=user.image_url)
                 i=len(response["outputs"])
                 i-=1
+                #using paralleldots api for abusive content in caption
+                paralleldots_api = PARALLELDOTS_KEY
+                url = "http://apis.paralleldots.com/abuse"
+                r = requests.post(url, params={"apikey": paralleldots_api, "text": caption})
+                caption_text = r.text
                 if response["outputs"][i]["data"]["concepts"][1]>response["outputs"][i]["data"]["concepts"][0]:
                     ctypes.windll.user32.MessageBoxW(0, u"Warning!! you are uploading adult content", u"Error", 0)
-
+                if 'Abusive' in caption_text:
+                    ctypes.windll.user32.MessageBoxW(0, u"Warning!!  caption containing abusive content", u"Error", 0)
                     return redirect('/feed/')
                 else:
                     user.save()

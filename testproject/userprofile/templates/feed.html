@@ -4,16 +4,25 @@
     <meta charset="UTF-8">
     <title>Feed</title>
 </head>
-<br>
- <form method="post" action="/logout/">
-     {%csrf_token%}
-     <input type="submit" class="btn btn-default" value="Logout">
- </form>
+<style>
+   body{
+    text-align:center;
+    padding:50px;
+    background:url("http://www.mrwallpaper.com/wallpapers/gradient-background.jpg");
+    background-size:cover;
+   }
 
- <form  method="post" action="/post/" >
-     {% csrf_token %}
-     <input type="submit" class="button button-default" value="Create post"/>
- </form>
+</style>
+<body>
+   <form method="post" action="/logout/">
+      {%csrf_token%}
+      <input type="submit" class="btn btn-default" value="Logout">
+   </form>
+
+   <form  method="post" action="/post/" >
+      {% csrf_token %}
+      <input type="submit" class="button button-default" value="Create post"/>
+   </form>
 
 
 
