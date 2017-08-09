@@ -129,6 +129,7 @@ def Post_view(request):
                     return redirect('/post/')
                 else:
                     ctypes.windll.user32.MessageBoxW(0, u"caption is valid", u"Error", 0)
+                return redirect('/feed/')
         elif request.method=="GET":
             form=PostForm()
         return render(request,'post.html',{'form':form})
