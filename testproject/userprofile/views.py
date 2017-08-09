@@ -114,20 +114,21 @@ def Post_view(request):
                 model = app.models.get("nsfw-v1.0")
                 response=model.predict_by_url(url=user.image_url)
                 i=len(response["outputs"])
-                i-=1
-                #using paralleldots api for abusive content in caption
-                paralleldots_api = PARALLELDOTS_KEY
+                if response:
+                    if response["outputs"][0]["data"]["concepts"][1] > response["outputs"][0]["data"]["concepts"][0]:
+                        ctypes.windll.user32.MessageBoxW(0, u"Warning!! you are uploading adult content",u"Error", 0)
+                        return redirect('/post/')
+                    else:
+                        ctypes.windll.user32.MessageBoxW(0, u"Valid content", u"Error", 0)
+                # using paralleldots api for abusive content in caption
                 url = "http://apis.paralleldots.com/abuse"
-                r = requests.post(url, params={"apikey": paralleldots_api, "text": caption})
+                r = requests.post(url, params={"apikey":PARALLELDOTS_KEY, "text": caption})
                 caption_text = r.text
-                if response["outputs"][i]["data"]["concepts"][1]>response["outputs"][i]["data"]["concepts"][0]:
-                    ctypes.windll.user32.MessageBoxW(0, u"Warning!! you are uploading adult content", u"Error", 0)
                 if 'Abusive' in caption_text:
-                    ctypes.windll.user32.MessageBoxW(0, u"Warning!!  caption containing abusive content", u"Error", 0)
-                    return redirect('/feed/')
+                    ctypes.windll.user32.MessageBoxW(0, u"Warning!!  caption containing abusive content",u"Error", 0)
+                    return redirect('/post/')
                 else:
-                    user.save()
-                    return redirect('/feed/')
+                    ctypes.windll.user32.MessageBoxW(0, u"caption is valid", u"Error", 0)
         elif request.method=="GET":
             form=PostForm()
         return render(request,'post.html',{'form':form})
