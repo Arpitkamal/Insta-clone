@@ -104,25 +104,34 @@ def Post_view(request):
             if form.is_valid():
                 image=form.cleaned_data.get('image')
                 caption=form.cleaned_data.get('caption')
-                user=Postmodal(user=user,image=image,caption=caption)
-                user.save()
-                path=os.path.join(BASE_DIR,user.image.url)
-                client=ImgurClient(USER_CLIENT_ID,USER_CLIENT_SECRET)
-                user.image_url=client.upload_from_path(path,anon=True)['link']
-                user.save()
-                app = ClarifaiApp(api_key='aa14b38a0332430789ff7aebdcdd466b')
-                model = app.models.get('nsfw-v1.0')
-                response=model.predict_by_url(url=user.image_url)
-                image_response=response['outputs'][0]['data']['concepts']
-                for i in image_response:
-                    if i['name']=='nsfw':
-                        image_value=i['value']
-                        if image_value>=0.85:
-                            print response['outputs'][0]['data']['concepts']
-                            print image_value
-                            user.delete()
-                            error_message="you are trying to post inappropriate image"
-                            return render(request,'error.html',{'error_message':error_message})
+                url = "http://apis.paralleldots.com/abuse"
+                r = requests.post(url, params={"apikey": PARALLELDOTS_KEY, "text": caption})
+                caption_text = r.text
+                data = json.loads(caption_text)
+                if data['sentence_type'] == 'Abusive':
+                    print data['confidence_score']
+                    ctypes.windll.user32.MessageBoxW(0, u"Your caption contain Abusive content", u"Warning", 0)
+                    return redirect('/post/')
+                else:
+                    user=Postmodal(user=user,image=image,caption=caption)
+                    user.save()
+                    path=os.path.join(BASE_DIR,user.image.url)
+                    client=ImgurClient(USER_CLIENT_ID,USER_CLIENT_SECRET)
+                    user.image_url=client.upload_from_path(path,anon=True)['link']
+                    user.save()
+                    app = ClarifaiApp(api_key='aa14b38a0332430789ff7aebdcdd466b')
+                    model = app.models.get('nsfw-v1.0')
+                    response=model.predict_by_url(url=user.image_url)
+                    image_response=response['outputs'][0]['data']['concepts']
+                    for i in image_response:
+                        if i['name']=='nsfw':
+                            image_value=i['value']
+                            if image_value>=0.85:
+                                print response['outputs'][0]['data']['concepts']
+                                print image_value
+                                user.delete()
+                                error_message="you are trying to post inappropriate image"
+                                return render(request,'error.html',{'error_message':error_message})
                         else:
                             return redirect('/feed/')
         elif request.method=="GET":
@@ -185,20 +194,29 @@ def comment_view(request):
         if form.is_valid():
             post_id=form.cleaned_data.get('post').id
             comment_text=form.cleaned_data.get("comment_text")
-            comment=Commentmodel.objects.create(user=user,post_id=post_id,comment_text=comment_text)
-            comment.save()
-            sg = sendgrid.SendGridAPIClient(apikey=(SENDGRID_API_KEY))
-            from_email = Email("kamalarpit@yahoo.in")
-            to_email = Email(comment.post.user.email)
-            subject = "comment on your post"
-            content = Content("text/plain", "someone just comment on your post")
-            mail = Mail(from_email, subject, to_email, content)
-            response = sg.client.mail.send.post(request_body=mail.get())
-            print(response.status_code)
-            print(response.body)
-            print(response.headers)
-            ctypes.windll.user32.MessageBoxW(0, u"comment posted successfully", u"SUCCESS", 0)
-            return redirect('/feed/')
+            url = "http://apis.paralleldots.com/abuse"
+            r = requests.post(url, params={"apikey": PARALLELDOTS_KEY, "text": comment_text})
+            caption_text = r.text
+            data = json.loads(caption_text)
+            if data['sentence_type'] == 'Abusive':
+                print data['confidence_score']
+                ctypes.windll.user32.MessageBoxW(0, u"You are commenting Abusive content", u"Warning", 0)
+                return redirect('/feed/')
+            else:
+                comment=Commentmodel.objects.create(user=user,post_id=post_id,comment_text=comment_text)
+                comment.save()
+                sg = sendgrid.SendGridAPIClient(apikey=(SENDGRID_API_KEY))
+                from_email = Email("kamalarpit@yahoo.in")
+                to_email = Email(comment.user.email)
+                subject = "comment on your post"
+                content = Content("text/plain", "someone just comment on your post")
+                mail = Mail(from_email, subject, to_email, content)
+                response = sg.client.mail.send.post(request_body=mail.get())
+                print(response.status_code)
+                print(response.body)
+                print(response.headers)
+                ctypes.windll.user32.MessageBoxW(0, u"comment posted successfully", u"SUCCESS", 0)
+                return redirect('/feed/')
         else:
             return redirect('/feed/')
     else:
