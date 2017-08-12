@@ -109,27 +109,22 @@ def Post_view(request):
                 path=os.path.join(BASE_DIR,user.image.url)
                 client=ImgurClient(USER_CLIENT_ID,USER_CLIENT_SECRET)
                 user.image_url=client.upload_from_path(path,anon=True)['link']
-                #using clarifai api
-                app = ClarifaiApp(api_key="aa14b38a0332430789ff7aebdcdd466b")
-                model = app.models.get("nsfw-v1.0")
+                user.save()
+                app = ClarifaiApp(api_key='aa14b38a0332430789ff7aebdcdd466b')
+                model = app.models.get('nsfw-v1.0')
                 response=model.predict_by_url(url=user.image_url)
-                i=len(response["outputs"])
-                if response:
-                    if response["outputs"][0]["data"]["concepts"][1] > response["outputs"][0]["data"]["concepts"][0]:
-                        ctypes.windll.user32.MessageBoxW(0, u"Warning!! you are uploading adult content",u"Error", 0)
-                        return redirect('/post/')
-                    else:
-                        ctypes.windll.user32.MessageBoxW(0, u"Valid content", u"Error", 0)
-                # using paralleldots api for abusive content in caption
-                url = "http://apis.paralleldots.com/abuse"
-                r = requests.post(url, params={"apikey":PARALLELDOTS_KEY, "text": caption})
-                caption_text = r.text
-                if 'Abusive' in caption_text:
-                    ctypes.windll.user32.MessageBoxW(0, u"Warning!!  caption containing abusive content",u"Error", 0)
-                    return redirect('/post/')
-                else:
-                    ctypes.windll.user32.MessageBoxW(0, u"caption is valid", u"Error", 0)
-                return redirect('/feed/')
+                image_response=response['outputs'][0]['data']['concepts']
+                for i in image_response:
+                    if i['name']=='nsfw':
+                        image_value=i['value']
+                        if image_value>=0.85:
+                            print response['outputs'][0]['data']['concepts']
+                            print image_value
+                            user.delete()
+                            error_message="you are trying to post inappropriate image"
+                            return render(request,'error.html',{'error_message':error_message})
+                        else:
+                            return redirect('/feed/')
         elif request.method=="GET":
             form=PostForm()
         return render(request,'post.html',{'form':form})

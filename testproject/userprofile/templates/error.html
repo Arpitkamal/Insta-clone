@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Warning!!</title>
+</head>
+<body>
+<h2>{{error_message}}</h2>
+     <form action="/post/" method="post" >
+         {%csrf_token%}
+     <input type="submit" class="btn btn-button" value="back">
+     </form>
+</body>
+</html>
