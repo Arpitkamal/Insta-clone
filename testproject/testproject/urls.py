@@ -15,10 +15,10 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from userprofile.views import signup_view,login_view,feed_view,Post_view,like_view,comment_view,logout_view
-import re
+from userprofile.views import signup_view,login_view,feed_view,Post_view,like_view,comment_view,logout_view,upvote_comment_view
 
 urlpatterns = [
+    url('upvote/',upvote_comment_view),
     url('logout/',logout_view),
     url('comment/',comment_view),
     url('like/',like_view),

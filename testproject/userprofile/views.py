@@ -2,9 +2,9 @@
 from __future__ import unicode_literals
 
 from django.shortcuts import render,redirect
-from forms import SignUpForm,LoginForm,PostForm,LikeForm,CommentForm
+from forms import SignUpForm,LoginForm,PostForm,LikeForm,CommentForm,CommentLikeForm
 from django.template import loader
-from models import usermodel,UserSessionToken,Postmodal,Likemodel,Commentmodel
+from models import usermodel,UserSessionToken,Postmodal,Likemodel,Commentmodel,CommentLikeModel
 from django.http import HttpResponse
 from django.contrib.auth.hashers import make_password ,check_password
 from imgurpython import ImgurClient
@@ -222,6 +222,29 @@ def comment_view(request):
     else:
         return redirect('/login/')
 
+def upvote_comment_view(request):
+    user=check_validation(request)
+    if user and request.method=="POST":
+        form=CommentLikeForm(request.POST)
+        if form.is_valid():
+            comment_id=form.cleaned_data.get('comment').id
+            existed_like=CommentLikeModel.objects.filter(comment_id=comment_id,user=user).first()
+            if not existed_like:
+                CommentLikeModel.objects.create(comment_id=comment_id,user=user)
+                Commentmodel.has_upvoted=True
+                ctypes.windll.user32.MessageBoxW(0, u"comment is upvoted successfully", u"SUCCESS", 0)
+            else:
+                existed_like.delete()
+                Commentmodel.has_upvoted=False
+                ctypes.windll.user32.MessageBoxW(0, u"comment downvoted successfully", u"SUCCESS", 0)
+
+        return redirect('/feed/')
+    else:
+        return redirect('/login/')
+
+
+
+
 def check_validation(request):
     if request.COOKIES.get('session_token'):
         session = UserSessionToken.objects.filter(session_token=request.COOKIES.get('session_token')).first()
@@ -241,3 +264,4 @@ def logout_view(request):
             return render(request,"logout.html")
     else:
         return None
+

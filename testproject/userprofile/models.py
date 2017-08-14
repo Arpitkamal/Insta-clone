@@ -61,6 +61,16 @@ class Commentmodel(models.Model):
     comment_text=models.CharField(max_length=1000)
     created_on=models.DateTimeField(auto_now_add=True)
     modified=models.DateTimeField(auto_now=True)
+    has_upvoted=False
 
+    @property
+    def number_of_like(self):
+        return  len(CommentLikeModel.objects.filter(comment=self))
+
+class CommentLikeModel(models.Model):
+    user=models.ForeignKey(usermodel)
+    comment=models.ForeignKey(Commentmodel,null=True,blank=True)
+    created_on=models.DateTimeField(auto_now_add=True)
+    modified=models.DateTimeField(auto_now=True)
 
 
