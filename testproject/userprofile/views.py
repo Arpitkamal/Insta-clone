@@ -247,10 +247,9 @@ def particular_user_post(request,user_name):
     if user:
         post=usermodel.objects.all().filter(username=user_name).first()
         if post:
-            userpost=Postmodal.objects.all().filter(username=user_name)
-            return render(request,'postofuser.html',{'posts':userpost,'username':user_name})
-         
-
+            userpost=Postmodal.objects.all().filter(user_username=user_name)
+            return render(request,'postofuser.html',{'pposts':userpost,'username':user_name})
+        return redirect('/feed/')
     else:
         return redirect('/login/')
 
