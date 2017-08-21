@@ -18,7 +18,7 @@ from django.contrib import admin
 from userprofile.views import signup_view,login_view,feed_view,Post_view,like_view,comment_view,logout_view,upvote_comment_view,particular_user_post
 
 urlpatterns = [
-    url(r'^login/feed/(?P<user_name>[a-zA-Z]+)/$',particular_user_post),
+    url(r'^login/feed/(?P<user_name>.+)/$',particular_user_post),
     url('upvote/',upvote_comment_view),
     url('logout/',logout_view),
     url('comment/',comment_view),

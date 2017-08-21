@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{username}} Posts</title>
+    <title> Posts</title>
 </head>
 <body>
 <body>
@@ -13,14 +13,13 @@
 
    <form  method="post" action="/post/" >
       {% csrf_token %}
-
       <input type="submit" class="button button-default" value="Create post"/>
    </form>
 
 
-   {% for post in pposts %}
+   {% for post in posts %}
 
-      <h3> Posted by: {{username}}</h3>
+      <h3> Posted by: {{post.user.username}}</h3>
       <img style="display:inline-block; width:450px; height:300px; " src="{{post.image_url}}"><br/><br/>
       <span style="display:inline-block">{{ post.caption }}</span><br/><br/>
        <div style="display:inline-block">

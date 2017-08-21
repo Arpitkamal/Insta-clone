@@ -245,11 +245,8 @@ def upvote_comment_view(request):
 def particular_user_post(request,user_name):
     user=check_validation(request)
     if user:
-        post=usermodel.objects.all().filter(username=user_name).first()
-        if post:
-            userpost=Postmodal.objects.all().filter(user_username=user_name)
-            return render(request,'postofuser.html',{'pposts':userpost,'username':user_name})
-        return redirect('/feed/')
+        post=Postmodal.objects.all().filter(username=user_name).first()
+        return render(request,'postofuser.html',{'posts':post,'username':user_name})
     else:
         return redirect('/login/')
 
