@@ -17,13 +17,13 @@ import ctypes
 import sendgrid
 from sendgrid.helpers.mail import *
 import requests,json
-USER_CLIENT_ID='eadc92c53ed9e6e'
-USER_CLIENT_SECRET='f392bcdca7698d2928f9157d230cefc62d62e554'
-SENDGRID_API_KEY="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"
-PARALLELDOTS_KEY="bH9BtD1MWO61McK0LgAlGpeglsBIivXEFDQMO9VA1qo"
+USER_CLIENT_ID=''
+USER_CLIENT_SECRET=''
+SENDGRID_API_KEY=""
+PARALLELDOTS_KEY=""
 
 
-# Create your views here.
+# view for signup.html
 def signup_view(request):
     import datetime
     if request.method=="POST":
@@ -35,7 +35,7 @@ def signup_view(request):
             password = form.cleaned_data['password']
             user=usermodel(name=name,username=username,email=email,password=make_password(password))
             user.save()
-            sg = sendgrid.SendGridAPIClient(apikey=(SENDGRID_API_KEY))
+            sg = sendgrid.SendGridAPIClient(apikey=(SENDGRID_API_KEY)) # using sandgrid api to send mails
             from_email = Email("kamalarpit@yahoo.in")
             to_email = Email(email)
             subject = "Successfully login "
@@ -54,7 +54,7 @@ def signup_view(request):
     return render(request , 'index.html',{'form': signup_form,'hun_da_time':date})
 
 
-
+# view for login.html
 def login_view(request):
     if request.method =="POST":
         form=LoginForm(request.POST)
@@ -79,7 +79,7 @@ def login_view(request):
     return render(request , 'login.html',{'from':login_form})
 
 
-
+# view for feed.html
 def feed_view(request):
     user=check_validation(request)
     if user:
@@ -95,7 +95,7 @@ def feed_view(request):
         return render('/login/')
 
 
-
+# view for post.html
 def Post_view(request):
     user=check_validation(request)
     if user:
@@ -104,7 +104,7 @@ def Post_view(request):
             if form.is_valid():
                 image=form.cleaned_data.get('image')
                 caption=form.cleaned_data.get('caption')
-                url = "http://apis.paralleldots.com/abuse"
+                url = "http://apis.paralleldots.com/abuse"  #using paralleldots api to detect Abusive content in caption
                 r = requests.post(url, params={"apikey": PARALLELDOTS_KEY, "text": caption})
                 caption_text = r.text
                 data = json.loads(caption_text)
@@ -141,21 +141,7 @@ def Post_view(request):
         redirect('/login/')
 
 
-def feed_view(request):
-    user=check_validation(request)
-    if user:
-        posts=Postmodal.objects.all().order_by('-created_on')
-
-        for post in posts:
-            existing_like=Likemodel.objects.filter(post_id=post.id,user=user).first()
-            if existing_like:
-                post.has_like=True
-
-        return render(request,"feed.html",{"posts":posts})
-    else:
-        return render('/login/')
-
-
+#view for like on post
 def like_view(request):
     user=check_validation(request)
     if user and request.method=="POST":
@@ -186,7 +172,7 @@ def like_view(request):
         return redirect("/login/")
 
 
-
+# view for comment on post
 def comment_view(request):
     user=check_validation(request)
     if user and request.method=="POST":
@@ -194,7 +180,7 @@ def comment_view(request):
         if form.is_valid():
             post_id=form.cleaned_data.get('post').id
             comment_text=form.cleaned_data.get("comment_text")
-            url = "http://apis.paralleldots.com/abuse"
+            url = "http://apis.paralleldots.com/abuse" #using paralleldots api to detect Abusive content in comment
             r = requests.post(url, params={"apikey": PARALLELDOTS_KEY, "text": comment_text})
             caption_text = r.text
             data = json.loads(caption_text)
@@ -222,6 +208,7 @@ def comment_view(request):
     else:
         return redirect('/login/')
 
+#view for upvote on comment
 def upvote_comment_view(request):
     user=check_validation(request)
     if user and request.method=="POST":
@@ -261,7 +248,7 @@ def check_validation(request):
             else:
                 return None
 
-
+#view for logout.html
 def logout_view(request):
     if request.COOKIES.get("session_token"):
         session=UserSessionToken.objects.filter(session_token=request.COOKIES.get("session_token")).first()
